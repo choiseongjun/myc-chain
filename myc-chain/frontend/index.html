@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYC Chain - 결제 관리 시스템</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            color: #667eea;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge.completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .badge.processing {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .refresh-btn:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏪 MYC Chain 결제 관리 시스템</h1>
+            <p class="subtitle">블록체인 기반 가맹점 결제 및 정산 플랫폼</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('merchants')">가맹점 관리</button>
+            <button class="tab" onclick="showTab('payments')">결제 내역</button>
+            <button class="tab" onclick="showTab('settlements')">정산 관리</button>
+        </div>
+
+        <div class="content">
+            <button class="refresh-btn" onclick="refreshData()">🔄 새로고침</button>
+
+            <!-- 가맹점 탭 -->
+            <div id="merchants-tab" class="tab-content active">
+                <h2>가맹점 목록</h2>
+                <div id="merchants-stats" class="stats"></div>
+                <div id="merchants-loading" class="loading">로딩 중...</div>
+                <div id="merchants-error" class="error" style="display: none;"></div>
+                <table id="merchants-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>가맹점명</th>
+                            <th>상태</th>
+                            <th>등록일시</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- 결제 탭 -->
+            <div id="payments-tab" class="tab-content">
+                <h2>결제 내역</h2>
+                <div id="payments-stats" class="stats"></div>
+                <div id="payments-loading" class="loading">로딩 중...</div>
+                <div id="payments-error" class="error" style="display: none;"></div>
+                <table id="payments-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>가맹점</th>
+                            <th>고객</th>
+                            <th>금액</th>
+                            <th>상태</th>
+                            <th>결제일시</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- 정산 탭 -->
+            <div id="settlements-tab" class="tab-content">
+                <h2>정산 내역</h2>
+                <div id="settlements-stats" class="stats"></div>
+                <div id="settlements-loading" class="loading">로딩 중...</div>
+                <div id="settlements-error" class="error" style="display: none;"></div>
+                <table id="settlements-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>가맹점</th>
+                            <th>총 금액</th>
+                            <th>정산일</th>
+                            <th>상태</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:1317/mycchain/payment';
+
+        // 탭 전환
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // 해당 탭의 데이터 로드
+            if (tabName === 'merchants') loadMerchants();
+            if (tabName === 'payments') loadPayments();
+            if (tabName === 'settlements') loadSettlements();
+        }
+
+        // 현재 활성 탭 데이터 새로고침
+        function refreshData() {
+            const activeTab = document.querySelector('.tab.active').textContent;
+            if (activeTab.includes('가맹점')) loadMerchants();
+            if (activeTab.includes('결제')) loadPayments();
+            if (activeTab.includes('정산')) loadSettlements();
+        }
+
+        // 날짜 포맷 함수
+        function formatDate(timestamp) {
+            const date = new Date(parseInt(timestamp) * 1000);
+            return date.toLocaleString('ko-KR');
+        }
+
+        // 금액 포맷 함수
+        function formatAmount(amount) {
+            const num = parseInt(amount.replace('stake', ''));
+            return num.toLocaleString() + '원';
+        }
+
+        // 가맹점 로드
+        async function loadMerchants() {
+            const loading = document.getElementById('merchants-loading');
+            const error = document.getElementById('merchants-error');
+            const table = document.getElementById('merchants-table');
+            const tbody = table.querySelector('tbody');
+            const stats = document.getElementById('merchants-stats');
+
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            table.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE}/merchant`);
+                const data = await response.json();
+                const merchants = data.merchant || [];
+
+                // 통계 표시
+                const activeCount = merchants.filter(m => m.status === 'active').length;
+                stats.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-label">전체 가맹점</div>
+                        <div class="stat-value">${merchants.length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">활성 가맹점</div>
+                        <div class="stat-value">${activeCount}</div>
+                    </div>
+                `;
+
+                // 테이블 표시
+                tbody.innerHTML = merchants.map(m => `
+                    <tr>
+                        <td>${m.index}</td>
+                        <td><strong>${m.name}</strong></td>
+                        <td><span class="badge ${m.status}">${m.status}</span></td>
+                        <td>${formatDate(m.registeredAt)}</td>
+                    </tr>
+                `).join('');
+
+                loading.style.display = 'none';
+                table.style.display = 'table';
+            } catch (err) {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = '데이터를 불러오는데 실패했습니다: ' + err.message;
+            }
+        }
+
+        // 결제 내역 로드
+        async function loadPayments() {
+            const loading = document.getElementById('payments-loading');
+            const error = document.getElementById('payments-error');
+            const table = document.getElementById('payments-table');
+            const tbody = table.querySelector('tbody');
+            const stats = document.getElementById('payments-stats');
+
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            table.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE}/payment`);
+                const data = await response.json();
+                const payments = data.payment || [];
+
+                // 통계 계산
+                const totalAmount = payments.reduce((sum, p) =>
+                    sum + parseInt(p.amount.replace('stake', '')), 0
+                );
+                const completedCount = payments.filter(p => p.status === 'completed').length;
+
+                stats.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-label">전체 결제</div>
+                        <div class="stat-value">${payments.length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">완료된 결제</div>
+                        <div class="stat-value">${completedCount}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">총 결제액</div>
+                        <div class="stat-value">${(totalAmount / 10000).toFixed(0)}만원</div>
+                    </div>
+                `;
+
+                tbody.innerHTML = payments.map(p => `
+                    <tr>
+                        <td>${p.id}</td>
+                        <td><strong>${p.merchantId}</strong></td>
+                        <td>${p.customerId}</td>
+                        <td><strong>${formatAmount(p.amount)}</strong></td>
+                        <td><span class="badge ${p.status}">${p.status}</span></td>
+                        <td>${formatDate(p.createdAt)}</td>
+                    </tr>
+                `).join('');
+
+                loading.style.display = 'none';
+                table.style.display = 'table';
+            } catch (err) {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = '데이터를 불러오는데 실패했습니다: ' + err.message;
+            }
+        }
+
+        // 정산 내역 로드
+        async function loadSettlements() {
+            const loading = document.getElementById('settlements-loading');
+            const error = document.getElementById('settlements-error');
+            const table = document.getElementById('settlements-table');
+            const tbody = table.querySelector('tbody');
+            const stats = document.getElementById('settlements-stats');
+
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            table.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE}/settlement`);
+                const data = await response.json();
+                const settlements = data.settlement || [];
+
+                // 통계
+                const totalAmount = settlements.reduce((sum, s) =>
+                    sum + parseInt(s.totalAmount.replace('stake', '')), 0
+                );
+                const completedCount = settlements.filter(s => s.status === 'completed').length;
+
+                stats.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-label">전체 정산</div>
+                        <div class="stat-value">${settlements.length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">완료된 정산</div>
+                        <div class="stat-value">${completedCount}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">총 정산액</div>
+                        <div class="stat-value">${(totalAmount / 10000).toFixed(0)}만원</div>
+                    </div>
+                `;
+
+                tbody.innerHTML = settlements.map(s => `
+                    <tr>
+                        <td>${s.id}</td>
+                        <td><strong>${s.merchantId}</strong></td>
+                        <td><strong>${formatAmount(s.totalAmount)}</strong></td>
+                        <td>${formatDate(s.settlementDate)}</td>
+                        <td><span class="badge ${s.status}">${s.status}</span></td>
+                    </tr>
+                `).join('');
+
+                loading.style.display = 'none';
+                table.style.display = 'table';
+            } catch (err) {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = '데이터를 불러오는데 실패했습니다: ' + err.message;
+            }
+        }
+
+        // 페이지 로드 시 가맹점 데이터 로드
+        window.addEventListener('DOMContentLoaded', () => {
+            loadMerchants();
+        });
+    </script>
+</body>
+</html>

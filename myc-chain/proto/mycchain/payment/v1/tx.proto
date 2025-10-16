@@ -1,0 +1,184 @@
+syntax = "proto3";
+
+package mycchain.payment.v1;
+
+import "amino/amino.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "mycchain/payment/v1/params.proto";
+
+option go_package = "myc-chain/x/payment/types";
+
+// Msg defines the Msg service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  // UpdateParams defines a (governance) operation for updating the module
+  // parameters. The authority defaults to the x/gov module account.
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+
+  // CreateMerchant defines the CreateMerchant RPC.
+  rpc CreateMerchant(MsgCreateMerchant) returns (MsgCreateMerchantResponse);
+
+  // UpdateMerchant defines the UpdateMerchant RPC.
+  rpc UpdateMerchant(MsgUpdateMerchant) returns (MsgUpdateMerchantResponse);
+
+  // DeleteMerchant defines the DeleteMerchant RPC.
+  rpc DeleteMerchant(MsgDeleteMerchant) returns (MsgDeleteMerchantResponse);
+
+  // CreatePayment defines the CreatePayment RPC.
+  rpc CreatePayment(MsgCreatePayment) returns (MsgCreatePaymentResponse);
+
+  // UpdatePayment defines the UpdatePayment RPC.
+  rpc UpdatePayment(MsgUpdatePayment) returns (MsgUpdatePaymentResponse);
+
+  // DeletePayment defines the DeletePayment RPC.
+  rpc DeletePayment(MsgDeletePayment) returns (MsgDeletePaymentResponse);
+
+  // CreateSettlement defines the CreateSettlement RPC.
+  rpc CreateSettlement(MsgCreateSettlement) returns (MsgCreateSettlementResponse);
+
+  // UpdateSettlement defines the UpdateSettlement RPC.
+  rpc UpdateSettlement(MsgUpdateSettlement) returns (MsgUpdateSettlementResponse);
+
+  // DeleteSettlement defines the DeleteSettlement RPC.
+  rpc DeleteSettlement(MsgDeleteSettlement) returns (MsgDeleteSettlementResponse);
+}
+
+// MsgUpdateParams is the Msg/UpdateParams request type.
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "mycchain/x/payment/MsgUpdateParams";
+
+  // authority is the address that controls the module (defaults to x/gov unless overwritten).
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // params defines the module parameters to update.
+
+  // NOTE: All parameters must be supplied.
+  Params params = 2 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// MsgUpdateParamsResponse defines the response structure for executing a
+// MsgUpdateParams message.
+message MsgUpdateParamsResponse {}
+
+// MsgCreateMerchant defines the MsgCreateMerchant message.
+message MsgCreateMerchant {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string index = 2;
+  string name = 3;
+  string status = 4;
+  int64 registered_at = 5;
+}
+
+// MsgCreateMerchantResponse defines the MsgCreateMerchantResponse message.
+message MsgCreateMerchantResponse {}
+
+// MsgUpdateMerchant defines the MsgUpdateMerchant message.
+message MsgUpdateMerchant {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string index = 2;
+  string name = 3;
+  string status = 4;
+  int64 registered_at = 5;
+}
+
+// MsgUpdateMerchantResponse defines the MsgUpdateMerchantResponse message.
+message MsgUpdateMerchantResponse {}
+
+// MsgDeleteMerchant defines the MsgDeleteMerchant message.
+message MsgDeleteMerchant {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string index = 2;
+}
+
+// MsgDeleteMerchantResponse defines the MsgDeleteMerchantResponse message.
+message MsgDeleteMerchantResponse {}
+
+// MsgCreatePayment defines the MsgCreatePayment message.
+message MsgCreatePayment {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string merchant_id = 2;
+  string customer_id = 3;
+  string amount = 4;
+  string status = 5;
+  int64 created_at = 6;
+}
+
+// MsgCreatePaymentResponse defines the MsgCreatePaymentResponse message.
+message MsgCreatePaymentResponse {
+  uint64 id = 1;
+}
+
+// MsgUpdatePayment defines the MsgUpdatePayment message.
+message MsgUpdatePayment {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 id = 2;
+  string merchant_id = 3;
+  string customer_id = 4;
+  string amount = 5;
+  string status = 6;
+  int64 created_at = 7;
+}
+
+// MsgUpdatePaymentResponse defines the MsgUpdatePaymentResponse message.
+message MsgUpdatePaymentResponse {}
+
+// MsgDeletePayment defines the MsgDeletePayment message.
+message MsgDeletePayment {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 id = 2;
+}
+
+// MsgDeletePaymentResponse defines the MsgDeletePaymentResponse message.
+message MsgDeletePaymentResponse {}
+
+// MsgCreateSettlement defines the MsgCreateSettlement message.
+message MsgCreateSettlement {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string merchant_id = 2;
+  string total_amount = 3;
+  int64 settlement_date = 4;
+  string status = 5;
+}
+
+// MsgCreateSettlementResponse defines the MsgCreateSettlementResponse message.
+message MsgCreateSettlementResponse {
+  uint64 id = 1;
+}
+
+// MsgUpdateSettlement defines the MsgUpdateSettlement message.
+message MsgUpdateSettlement {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 id = 2;
+  string merchant_id = 3;
+  string total_amount = 4;
+  int64 settlement_date = 5;
+  string status = 6;
+}
+
+// MsgUpdateSettlementResponse defines the MsgUpdateSettlementResponse message.
+message MsgUpdateSettlementResponse {}
+
+// MsgDeleteSettlement defines the MsgDeleteSettlement message.
+message MsgDeleteSettlement {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 id = 2;
+}
+
+// MsgDeleteSettlementResponse defines the MsgDeleteSettlementResponse message.
+message MsgDeleteSettlementResponse {}

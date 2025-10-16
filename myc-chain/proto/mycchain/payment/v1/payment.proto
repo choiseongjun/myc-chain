@@ -1,0 +1,15 @@
+syntax = "proto3";
+package mycchain.payment.v1;
+
+option go_package = "myc-chain/x/payment/types";
+
+// Payment defines the Payment message.
+message Payment {
+  uint64 id = 1;
+  string merchant_id = 2;
+  string customer_id = 3;
+  string amount = 4;
+  string status = 5;
+  int64 created_at = 6;
+  string creator = 7;
+}

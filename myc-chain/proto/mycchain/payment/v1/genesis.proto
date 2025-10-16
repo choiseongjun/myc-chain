@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package mycchain.payment.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+import "mycchain/payment/v1/merchant.proto";
+import "mycchain/payment/v1/params.proto";
+import "mycchain/payment/v1/payment.proto";
+import "mycchain/payment/v1/settlement.proto";
+
+option go_package = "myc-chain/x/payment/types";
+
+// GenesisState defines the payment module's genesis state.
+message GenesisState {
+  // params defines all the parameters of the module.
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+  repeated Merchant merchant_map = 2 [(gogoproto.nullable) = false];
+  repeated Payment payment_list = 3 [(gogoproto.nullable) = false];
+  uint64 payment_count = 4;
+  repeated Settlement settlement_list = 5 [(gogoproto.nullable) = false];
+  uint64 settlement_count = 6;
+}

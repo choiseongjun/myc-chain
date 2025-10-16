@@ -1,0 +1,13 @@
+syntax = "proto3";
+package mycchain.payment.v1;
+
+import "amino/amino.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "myc-chain/x/payment/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (amino.name) = "mycchain/x/payment/Params";
+  option (gogoproto.equal) = true;
+}

@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package mycchain.payment.v1;
+
+import "amino/amino.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "mycchain/payment/v1/merchant.proto";
+import "mycchain/payment/v1/params.proto";
+import "mycchain/payment/v1/payment.proto";
+import "mycchain/payment/v1/settlement.proto";
+
+option go_package = "myc-chain/x/payment/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/myc-chain/payment/v1/params";
+  }
+
+  // ListMerchant Queries a list of Merchant items.
+  rpc GetMerchant(QueryGetMerchantRequest) returns (QueryGetMerchantResponse) {
+    option (google.api.http).get = "/myc-chain/payment/v1/merchant/{index}";
+  }
+
+  // ListMerchant defines the ListMerchant RPC.
+  rpc ListMerchant(QueryAllMerchantRequest) returns (QueryAllMerchantResponse) {
+    option (google.api.http).get = "/myc-chain/payment/v1/merchant";
+  }
+
+  // ListPayment Queries a list of Payment items.
+  rpc GetPayment(QueryGetPaymentRequest) returns (QueryGetPaymentResponse) {
+    option (google.api.http).get = "/myc-chain/payment/v1/payment/{id}";
+  }
+
+  // ListPayment defines the ListPayment RPC.
+  rpc ListPayment(QueryAllPaymentRequest) returns (QueryAllPaymentResponse) {
+    option (google.api.http).get = "/myc-chain/payment/v1/payment";
+  }
+
+  // ListSettlement Queries a list of Settlement items.
+  rpc GetSettlement(QueryGetSettlementRequest) returns (QueryGetSettlementResponse) {
+    option (google.api.http).get = "/myc-chain/payment/v1/settlement/{id}";
+  }
+
+  // ListSettlement defines the ListSettlement RPC.
+  rpc ListSettlement(QueryAllSettlementRequest) returns (QueryAllSettlementResponse) {
+    option (google.api.http).get = "/myc-chain/payment/v1/settlement";
+  }
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// QueryGetMerchantRequest defines the QueryGetMerchantRequest message.
+message QueryGetMerchantRequest {
+  string index = 1;
+}
+
+// QueryGetMerchantResponse defines the QueryGetMerchantResponse message.
+message QueryGetMerchantResponse {
+  Merchant merchant = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryAllMerchantRequest defines the QueryAllMerchantRequest message.
+message QueryAllMerchantRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllMerchantResponse defines the QueryAllMerchantResponse message.
+message QueryAllMerchantResponse {
+  repeated Merchant merchant = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryGetPaymentRequest defines the QueryGetPaymentRequest message.
+message QueryGetPaymentRequest {
+  uint64 id = 1;
+}
+
+// QueryGetPaymentResponse defines the QueryGetPaymentResponse message.
+message QueryGetPaymentResponse {
+  Payment payment = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryAllPaymentRequest defines the QueryAllPaymentRequest message.
+message QueryAllPaymentRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllPaymentResponse defines the QueryAllPaymentResponse message.
+message QueryAllPaymentResponse {
+  repeated Payment payment = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryGetSettlementRequest defines the QueryGetSettlementRequest message.
+message QueryGetSettlementRequest {
+  uint64 id = 1;
+}
+
+// QueryGetSettlementResponse defines the QueryGetSettlementResponse message.
+message QueryGetSettlementResponse {
+  Settlement settlement = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryAllSettlementRequest defines the QueryAllSettlementRequest message.
+message QueryAllSettlementRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllSettlementResponse defines the QueryAllSettlementResponse message.
+message QueryAllSettlementResponse {
+  repeated Settlement settlement = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

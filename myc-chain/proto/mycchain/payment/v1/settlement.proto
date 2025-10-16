@@ -1,0 +1,14 @@
+syntax = "proto3";
+package mycchain.payment.v1;
+
+option go_package = "myc-chain/x/payment/types";
+
+// Settlement defines the Settlement message.
+message Settlement {
+  uint64 id = 1;
+  string merchant_id = 2;
+  string total_amount = 3;
+  int64 settlement_date = 4;
+  string status = 5;
+  string creator = 6;
+}
