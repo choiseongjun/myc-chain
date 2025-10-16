@@ -1,0 +1,52 @@
+📋 가맹점 생성 명령어
+
+  # 스타벅스 가맹점
+  myc-chaind tx payment create-merchant starbucks active 1697500000 --from alice --chain-id mycchain --node http://localhost:26657 -y
+
+  # 이디야 가맹점
+  myc-chaind tx payment create-merchant ediya active 1697500100 --from alice --chain-id mycchain --node http://localhost:26657 -y
+
+  # 투썸플레이스 가맹점
+  myc-chaind tx payment create-merchant twosome pending 1697500200 --from alice --chain-id mycchain --node http://localhost:26657 -y
+
+  💳 결제 트랜잭션 생성 명령어
+
+  # 스타벅스 결제 5000원
+  myc-chaind tx payment create-payment starbucks customer001 5000stake completed 1697600000 --from alice --chain-id mycchain --node http://localhost:26657 -y        
+
+  # 스타벅스 결제 12000원
+  myc-chaind tx payment create-payment starbucks customer002 12000stake completed 1697600100 --from alice --chain-id mycchain --node http://localhost:26657 -y       
+
+  # 이디야 결제 3500원
+  myc-chaind tx payment create-payment ediya customer001 3500stake completed 1697600200 --from alice --chain-id mycchain --node http://localhost:26657 -y
+
+  # 이디야 결제 4200원 (pending 상태)
+  myc-chaind tx payment create-payment ediya customer003 4200stake pending 1697600300 --from alice --chain-id mycchain --node http://localhost:26657 -y
+
+  # 투썸플레이스 결제 8500원
+  myc-chaind tx payment create-payment twosome customer002 8500stake completed 1697600400 --from bob --chain-id mycchain --node http://localhost:26657 -y
+
+  💰 정산 생성 명령어
+
+  # 스타벅스 일일 정산 (17000원)
+  myc-chaind tx payment create-settlement starbucks 17000stake 1697702400 completed --from alice --chain-id mycchain --node http://localhost:26657 -y
+
+  # 이디야 일일 정산 (7700원)
+  myc-chaind tx payment create-settlement ediya 7700stake 1697702400 pending --from alice --chain-id mycchain --node http://localhost:26657 -y
+
+  # 투썸플레이스 일일 정산 (8500원)
+  myc-chaind tx payment create-settlement twosome 8500stake 1697702400 processing --from bob --chain-id mycchain --node http://localhost:26657 -y
+
+  🔍 조회 명령어
+
+  # 모든 가맹점 조회
+  myc-chaind query payment list-merchant --node http://localhost:26657
+
+  # 특정 가맹점 조회
+  myc-chaind query payment show-merchant starbucks --node http://localhost:26657
+
+  # 모든 결제 내역 조회
+  myc-chaind query payment list-payment --node http://localhost:26657
+
+  # 모든 정산 내역 조회
+  myc-chaind query payment list-settlement --node http://localhost:26657
